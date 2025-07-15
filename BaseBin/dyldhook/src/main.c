@@ -69,7 +69,7 @@ void dyldhook_init(uintptr_t kernelParams)
 	// JBLogDebug("========= dyldhook_init enter");
     // syslog(LOG_ERR, "========= dyldhook_init enter, syslog");
 	// os_log(OS_LOG_DEFAULT, "========= dyldhook_init enter, os_log");
-	printf("========= dyldhook_init enter, printf\n");
+	// printf("========= dyldhook_init enter, printf\n");
 
 	extern void dyldhook_init_roothide(uintptr_t);
 	dyldhook_init_roothide(kernelParams);
