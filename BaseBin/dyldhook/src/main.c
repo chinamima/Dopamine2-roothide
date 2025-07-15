@@ -9,9 +9,9 @@
 #include "dyld.h"
 #include "dyld_jbinfo.h"
 
-// #include <syslog.h>
-// #include <os/log.h>
-#include <stdio.h>
+#include <syslog.h>
+#include <os/log.h>
+// #include <stdio.h>
 
 __attribute__((section("__DATA,__jbinfo"))) static char jbinfoSection[0x4000];
 #define jbInfo ((struct dyld_jbinfo *)&jbinfoSection[0])
