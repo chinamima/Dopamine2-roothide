@@ -8,6 +8,8 @@
 
 #include "dyld.h"
 #include "dyld_jbinfo.h"
+#include <syslog.h>
+#include <os/log.h>
 
 __attribute__((section("__DATA,__jbinfo"))) static char jbinfoSection[0x4000];
 #define jbInfo ((struct dyld_jbinfo *)&jbinfoSection[0])
@@ -62,7 +64,10 @@ void dyldhook_perform_checkin(void)
 
 void dyldhook_init(uintptr_t kernelParams)
 {
-	JBLogDebug("========= dyldhook_init enter");
+	// JBLogDebug("========= dyldhook_init enter");
+    syslog(LOG_ERR, "========= dyldhook_init enter, syslog");
+	os_log(OS_LOG_DEFAULT, "========= dyldhook_init enter, os_log");
+
 	extern void dyldhook_init_roothide(uintptr_t);
 	dyldhook_init_roothide(kernelParams);
 
