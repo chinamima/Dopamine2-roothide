@@ -62,6 +62,7 @@ void dyldhook_perform_checkin(void)
 
 void dyldhook_init(uintptr_t kernelParams)
 {
+	JBLogDebug("========= dyldhook_init enter");
 	extern void dyldhook_init_roothide(uintptr_t);
 	dyldhook_init_roothide(kernelParams);
 
