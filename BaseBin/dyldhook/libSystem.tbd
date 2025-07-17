@@ -7,4 +7,5 @@ current-version: 0
 compatibility-version: 0
 exports:
   - archs:           [ arm64, arm64e ]
+    symbols:         [ _syslog ]
 ...
