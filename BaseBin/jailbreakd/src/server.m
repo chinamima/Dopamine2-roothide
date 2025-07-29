@@ -17,7 +17,7 @@ void jailbreakd_reply_message(JBD_MESSAGE_ID msgId, xpc_object_t reply)
 	os_log(OS_LOG_DEFAULT, "========= jailbreakd_reply_message enter, os_log");
 	printf("========= jailbreakd_reply_message enter, printf\n");
 	char* desc = NULL;
-	JBLogDebug("reply message %d with %s", msgId, (desc=xpc_copy_description(reply)));
+	JBLogDebug("001 reply message %d with %s", msgId, (desc=xpc_copy_description(reply)));
 	if(desc) free(desc);
 	int err = xpc_pipe_routine_reply(reply);
 	if (err != 0) {
