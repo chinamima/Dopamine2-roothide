@@ -350,8 +350,8 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 
 				while(true) {
 					bool paused = false;
-					if (proc_paused(pidp, &paused) != 0) {
-						JBLogError("========= gjj test | Failed to check if process(%d) is paused", pidp);
+					if (proc_paused(*pidp, &paused) != 0) {
+						JBLogError("========= gjj test | Failed to check if process(%d) is paused", *pidp);
 						return -1;
 					}
 					if(paused) {
@@ -360,8 +360,8 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 					usleep(10*1000);
 				}
 
-				JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | SIGCONT pid %d in %s", pidp, path);
-				kill(pidp, SIGCONT);
+				JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | SIGCONT pid %d in %s", *pidp, path);
+				kill(*pidp, SIGCONT);
 
 
 			} else {
