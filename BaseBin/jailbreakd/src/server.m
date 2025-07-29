@@ -5,6 +5,11 @@
 #include <libjailbreak/libjailbreak.h>
 #include <libjailbreak/roothider.h>
 
+
+#include <syslog.h>
+#include <os/log.h>
+#include <stdio.h>
+
 void jailbreakd_reply_message(JBD_MESSAGE_ID msgId, xpc_object_t reply)
 {
 	char* desc = NULL;
@@ -18,6 +23,11 @@ void jailbreakd_reply_message(JBD_MESSAGE_ID msgId, xpc_object_t reply)
 
 void jailbreakd_received_message(mach_port_t port)
 {
+
+    syslog(LOG_ERR, "========= jailbreakd_received_message enter, syslog");
+	os_log(OS_LOG_DEFAULT, "========= jailbreakd_received_message enter, os_log");
+	printf("========= jailbreakd_received_message enter, printf\n");
+
 	@autoreleasepool {
 		xpc_object_t message = nil;
 		int err = xpc_pipe_receive(port, &message);
