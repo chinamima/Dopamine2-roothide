@@ -351,8 +351,10 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 				JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | __posix_spawn_orig_wrapper ret %d in %s", ret, path);
 
 				if(string_has_suffix(path, "/haha.app/haha")) {
+					BLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | enter check pid %d is paused, in %s", *blacklistedPidp, path);
+						
 					while(true) {
-						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | check pid %d is paused, in %s", *blacklistedPidp, path);
+						// JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | check pid %d is paused, in %s", *blacklistedPidp, path);
 						bool paused = false;
 						if (proc_paused(*blacklistedPidp, &paused) != 0) {
 							JBLogError("========= gjj test | Failed to check if process(%d) is paused", *blacklistedPidp);
@@ -364,12 +366,12 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 						usleep(10*1000);
 					}
 
-					char buffer[10] = {0}; 
-    				snprintf(buffer, 1024, "%d", *blacklistedPidp);
-					int r = exec_cmd(JBROOT_PATH("/basebin/opainject"), buffer, JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos.dylib"), NULL);
-					if (r == 0) {
-						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd success in %s", path);
-					}
+					// char buffer[10] = {0}; 
+    				// snprintf(buffer, 1024, "%d", *blacklistedPidp);
+					// int r = exec_cmd(JBROOT_PATH("/basebin/opainject"), buffer, JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos.dylib"), NULL);
+					// if (r == 0) {
+					// 	JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd success in %s", path);
+					// }
 
 					JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | SIGCONT pid %d in %s", *blacklistedPidp, path);
 					kill(*blacklistedPidp, SIGCONT);
