@@ -6,9 +6,13 @@
 
 #include <libjailbreak/libjailbreak.h>
 #include <libjailbreak/roothider.h>
+#include <libjailbreak/common.h>
 
 #include "../systemhook/src/common.h"
 #include "../systemhook/src/envbuf.h"
+
+// #include <sys/proc_info.h>
+
 
 const char* HOOK_DYLIB_PATH = NULL;
 
@@ -206,34 +210,31 @@ int roothide_launchd___posix_spawn__spinlock_fix_only(pid_t *restrict pidp, cons
 }
 
 
+// /* Status values. */
+// #define SIDL    1               /* Process being created by fork. */
+// #define SRUN    2               /* Currently runnable. */
+// #define SSLEEP  3               /* Sleeping on an address. */
+// #define SSTOP   4               /* Process debugging or suspension. */
+// #define SZOMB   5               /* Awaiting collection by parent. */
 
-#include <sys/proc_info.h>
+// int proc_paused(pid_t pid, bool* paused)
+// {
+//     *paused = false;
 
-/* Status values. */
-#define SIDL    1               /* Process being created by fork. */
-#define SRUN    2               /* Currently runnable. */
-#define SSLEEP  3               /* Sleeping on an address. */
-#define SSTOP   4               /* Process debugging or suspension. */
-#define SZOMB   5               /* Awaiting collection by parent. */
+//     struct proc_bsdinfo procInfo = {0};
+//     int ret = proc_pidinfo(pid, PROC_PIDTBSDINFO, 0, &procInfo, sizeof(procInfo));
+//     if (ret != sizeof(procInfo)) {
+//         return -1;
+//     }
 
-int proc_paused(pid_t pid, bool* paused)
-{
-    *paused = false;
+//     if (procInfo.pbi_status == SSTOP) {
+//         *paused = true;
+//     } else if (procInfo.pbi_status != SRUN) {
+//         return -1;
+//     }
 
-    struct proc_bsdinfo procInfo = {0};
-    int ret = proc_pidinfo(pid, PROC_PIDTBSDINFO, 0, &procInfo, sizeof(procInfo));
-    if (ret != sizeof(procInfo)) {
-        return -1;
-    }
-
-    if (procInfo.pbi_status == SSTOP) {
-        *paused = true;
-    } else if (procInfo.pbi_status != SRUN) {
-        return -1;
-    }
-
-    return 0;
-}
+//     return 0;
+// }
 
 
 
@@ -349,8 +350,8 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 
 				while(true) {
 					bool paused = false;
-					if (proc_paused(pid, &paused) != 0) {
-						JBLogError("========= gjj test | Failed to check if process(%d) is paused", pid);
+					if (proc_paused(pidp, &paused) != 0) {
+						JBLogError("========= gjj test | Failed to check if process(%d) is paused", pidp);
 						return -1;
 					}
 					if(paused) {
@@ -359,8 +360,8 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 					usleep(10*1000);
 				}
 
-				JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | SIGCONT pid %d in %s", pid, path);
-				kill(pid, SIGCONT);
+				JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | SIGCONT pid %d in %s", pidp, path);
+				kill(pidp, SIGCONT);
 
 
 			} else {
