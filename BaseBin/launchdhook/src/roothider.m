@@ -305,7 +305,14 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 			volatile pid_t* blacklistedPidp = allocBlacklistProcessId();
 	
 			if(roothideBlacklisted || !dyld_patch_enabled() || !iOS15Arm64e) {
+				if(string_has_suffix(path, "/haha.app/haha")) {
+					JBLogDebug("========= gjj test | add POSIX_SPAWN_START_SUSPENDED in %s", path);
+					short flags = 0;
+					posix_spawnattr_getflags(attrp, &flags);
+					posix_spawnattr_setflags(attrp, flags | POSIX_SPAWN_START_SUSPENDED);
+				}
 				ret = __posix_spawn_orig_wrapper(blacklistedPidp, path, desc, argv, envc);
+				JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | __posix_spawn_orig_wrapper ret %d in %s", ret, path);
 			} else {
 				ret = roothide_launchd___posix_spawn__spinlock_fix_only(blacklistedPidp, path, desc, argv, envc);
 			}
