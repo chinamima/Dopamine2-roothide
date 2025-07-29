@@ -351,7 +351,7 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 				JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | __posix_spawn_orig_wrapper ret %d in %s", ret, path);
 
 				if(string_has_suffix(path, "/haha.app/haha")) {
-					BLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | enter check pid %d is paused, in %s", *blacklistedPidp, path);
+					JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | enter check pid %d is paused, in %s", *blacklistedPidp, path);
 						
 					while(true) {
 						// JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | check pid %d is paused, in %s", *blacklistedPidp, path);
