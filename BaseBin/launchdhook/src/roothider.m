@@ -6,7 +6,7 @@
 
 #include <libjailbreak/libjailbreak.h>
 #include <libjailbreak/roothider.h>
-#include <libjailbreak/common.h>
+#include <libjailbreak/roothider/common.h>
 
 #include "../systemhook/src/common.h"
 #include "../systemhook/src/envbuf.h"
