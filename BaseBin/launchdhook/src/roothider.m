@@ -205,6 +205,38 @@ int roothide_launchd___posix_spawn__spinlock_fix_only(pid_t *restrict pidp, cons
 	return ret;
 }
 
+
+
+#include <sys/proc_info.h>
+
+/* Status values. */
+#define SIDL    1               /* Process being created by fork. */
+#define SRUN    2               /* Currently runnable. */
+#define SSLEEP  3               /* Sleeping on an address. */
+#define SSTOP   4               /* Process debugging or suspension. */
+#define SZOMB   5               /* Awaiting collection by parent. */
+
+int proc_paused(pid_t pid, bool* paused)
+{
+    *paused = false;
+
+    struct proc_bsdinfo procInfo = {0};
+    int ret = proc_pidinfo(pid, PROC_PIDTBSDINFO, 0, &procInfo, sizeof(procInfo));
+    if (ret != sizeof(procInfo)) {
+        return -1;
+    }
+
+    if (procInfo.pbi_status == SSTOP) {
+        *paused = true;
+    } else if (procInfo.pbi_status != SRUN) {
+        return -1;
+    }
+
+    return 0;
+}
+
+
+
 int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *restrict path, struct _posix_spawn_args_desc *desc, char *const argv[restrict], char *const envp[restrict])
 {
 	if(!desc || !desc->attrp) {
@@ -313,6 +345,24 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 				}
 				ret = __posix_spawn_orig_wrapper(blacklistedPidp, path, desc, argv, envc);
 				JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | __posix_spawn_orig_wrapper ret %d in %s", ret, path);
+
+
+				while(true) {
+					bool paused = false;
+					if (proc_paused(pid, &paused) != 0) {
+						JBLogError("========= gjj test | Failed to check if process(%d) is paused", pid);
+						return -1;
+					}
+					if(paused) {
+						break;
+					}
+					usleep(10*1000);
+				}
+
+				JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | SIGCONT pid %d in %s", pid, path);
+				kill(pid, SIGCONT);
+
+
 			} else {
 				ret = roothide_launchd___posix_spawn__spinlock_fix_only(blacklistedPidp, path, desc, argv, envc);
 			}
