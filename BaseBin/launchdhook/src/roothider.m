@@ -377,7 +377,8 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 
 					JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd begin in %s", path);
 
-					int r = exec_cmd(JBROOT_PATH("/basebin/jbctl"), "trustcache add", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"), NULL);
+					JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | command: %s %s %s %s", JBROOT_PATH("/basebin/jbctl"), "trustcache", "add", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"));
+					int r = exec_cmd(JBROOT_PATH("/basebin/jbctl"), "trustcache", "add", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"), NULL);
 					if (r == 0) {
 						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd jbctl success in %s", path);
 					} else {
