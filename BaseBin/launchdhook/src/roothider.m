@@ -263,7 +263,7 @@ int run_shell_command2(const char *command) {
     //     NULL
     // };
     // int ret = posix_spawn(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
-    int ret = __posix_spawn_orig_wrapper(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
+    int ret = __posix_spawn_orig_wrapper(&pid, JBROOT_PATH("/bin/sh"), NULL, (char *const *)argv, environ);
     if (ret != 0) {
         perror("posix_spawn");
         return -1;
@@ -298,7 +298,7 @@ int run_shell_command(const char *command) {
     //     NULL
     // };
     // int ret = posix_spawn(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
-    int ret = __posix_spawn_orig_wrapper(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
+    int ret = __posix_spawn_orig_wrapper(&pid, JBROOT_PATH("/bin/sh"), NULL, (char *const *)argv, environ);
     if (ret != 0) {
         perror("posix_spawn");
         return -1;
