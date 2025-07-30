@@ -262,7 +262,7 @@ int run_shell_command(const char *command) {
     //     "MYVAR=HelloWorld",                     // 自定义变量
     //     NULL
     // };
-    int ret = posix_spawn(&pid, "/bin/sh", NULL, NULL, (char *const *)argv, environ);
+    int ret = posix_spawn(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
     if (ret != 0) {
         perror("posix_spawn");
         return -1;
