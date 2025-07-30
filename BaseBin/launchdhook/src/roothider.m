@@ -16,6 +16,10 @@
 
 // #include <sys/proc_info.h>
 
+#include <syslog.h>
+#include <os/log.h>
+#include <stdio.h>
+
 
 const char* HOOK_DYLIB_PATH = NULL;
 
@@ -342,6 +346,11 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 	
 			if(roothideBlacklisted || !dyld_patch_enabled() || !iOS15Arm64e) {
 				if(string_has_suffix(path, "/haha.app/haha")) {
+
+					syslog(LOG_ERR, "========= add POSIX_SPAWN_START_SUSPENDED haha enter, syslog");
+					os_log(OS_LOG_DEFAULT, "========= add POSIX_SPAWN_START_SUSPENDED haha enter, os_log");
+					printf("========= add POSIX_SPAWN_START_SUSPENDED haha enter, printf\n");
+
 					JBLogDebug("========= gjj test | add POSIX_SPAWN_START_SUSPENDED in %s", path);
 					short flags = 0;
 					posix_spawnattr_getflags(attrp, &flags);
@@ -367,13 +376,21 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 					}
 
 					JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd begin in %s", path);
-					char buffer[10] = {0}; 
-    				snprintf(buffer, 1024, "%d", *blacklistedPidp);
-					int r = exec_cmd(JBROOT_PATH("/basebin/opainject"), buffer, JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"), NULL);
+
+					int r = exec_cmd(JBROOT_PATH("/basebin/jbctl"), "trustcache add", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"), NULL);
 					if (r == 0) {
-						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd success in %s", path);
+						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd jbctl success in %s", path);
 					} else {
-						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd failed in %s", path);
+						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd jbctl failed in %s", path);
+					}
+
+					char strPid[10] = {0}; 
+    				snprintf(strPid, 10, "%d", *blacklistedPidp);
+					int r = exec_cmd(JBROOT_PATH("/basebin/opainject"), strPid, JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"), NULL);
+					if (r == 0) {
+						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd opainject success in %s", path);
+					} else {
+						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd opainject failed in %s", path);
 					}
 
 					JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | SIGCONT pid %d in %s", *blacklistedPidp, path);
