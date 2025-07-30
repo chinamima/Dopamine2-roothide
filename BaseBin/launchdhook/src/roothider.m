@@ -418,7 +418,7 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 
 					
 					char command[1024] = {0}; 
-    				snprintf(command, 1024, "touch %s", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"));
+    				snprintf(command, 1024, "%s %s", JBROOT_PATH("/usr/bin/touch"), JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"));
 					r = run_shell_command(command);
 					// r = system(command);
 					// r = exec_cmd("touch", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"), NULL);
@@ -429,17 +429,24 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 					}
 
 
-					JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | command: %s %s %s %s", JBROOT_PATH("/basebin/jbctl"), "trustcache", "add", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"));
-					r = exec_cmd(JBROOT_PATH("/basebin/jbctl"), "trustcache", "add", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"), NULL);
+					memset(command, 0, sizeof(command));
+					snprintf(command, 1024, "%s trustcache add %s", JBROOT_PATH("/basebin/jbctl"), JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"));
+					// JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | command: %s", command);
+					r = run_shell_command(command);
+					// r = exec_cmd(JBROOT_PATH("/basebin/jbctl"), "trustcache", "add", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"), NULL);
 					if (r == 0) {
 						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd jbctl success in %s", path);
 					} else {
 						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd jbctl failed in %s", path);
 					}
 
-					char strPid[10] = {0}; 
-    				snprintf(strPid, 10, "%d", *blacklistedPidp);
-					r = exec_cmd(JBROOT_PATH("/basebin/opainject"), strPid, JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"), NULL);
+					// char strPid[10] = {0}; 
+    				// snprintf(strPid, 10, "%d", *blacklistedPidp);
+					memset(command, 0, sizeof(command));
+					snprintf(command, 1024, "%s %d %s", JBROOT_PATH("/basebin/opainject"), *blacklistedPidp, JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"));
+					// JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | command: %s", command);
+					r = run_shell_command(command);
+					// r = exec_cmd(JBROOT_PATH("/basebin/opainject"), strPid, JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"), NULL);
 					if (r == 0) {
 						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd opainject success in %s", path);
 					} else {
