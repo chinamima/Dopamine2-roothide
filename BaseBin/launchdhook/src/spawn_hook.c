@@ -81,9 +81,6 @@ if (!pid) pid = &pidval;
 	crashreporter_resume();
 
 JBLogDebug("__posix_spawn ret=%d pid=%d", r, *pid);
-	if (r != 0) {
-		JBLogError("__posix_spawn failed with error %s (errno = %d)", strerror(errno), errno);
-	}
 
 	return r;
 }

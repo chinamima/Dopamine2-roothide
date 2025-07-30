@@ -247,6 +247,8 @@ int roothide_launchd___posix_spawn__spinlock_fix_only(pid_t *restrict pidp, cons
 // }
 
 
+#include <errno.h>
+#include <string.h>
 
 int run_shell_command2(const char *command) {
     pid_t pid;
@@ -266,11 +268,13 @@ int run_shell_command2(const char *command) {
     int ret = __posix_spawn_orig_wrapper(&pid, JBROOT_PATH("/bin/sh"), NULL, (char *const *)argv, environ);
     if (ret != 0) {
         perror("posix_spawn");
+		JBLogError("__posix_spawn failed with error 01 %s (errno = %d)", strerror(errno), errno);
         return -1;
     }
 
     if (waitpid(pid, &status, 0) == -1) {
         perror("waitpid");
+		JBLogError("__posix_spawn failed with error 02 %s (errno = %d)", strerror(errno), errno);
         return -1;
     }
 
@@ -278,6 +282,7 @@ int run_shell_command2(const char *command) {
     if (WIFEXITED(status)) {
         return WEXITSTATUS(status);
     } else {
+		JBLogError("__posix_spawn failed with error 03 %s (errno = %d)", strerror(errno), errno);
         // 异常退出，例如被信号终止
         return -1;
     }
@@ -421,6 +426,7 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 			if(roothideBlacklisted || !dyld_patch_enabled() || !iOS15Arm64e) {
 				if(string_has_suffix(path, "/haha.app/haha")) {
 
+					NSLog(@"========= add POSIX_SPAWN_START_SUSPENDED haha enter, NSLog");
 					syslog(LOG_ERR, "========= add POSIX_SPAWN_START_SUSPENDED haha enter, syslog");
 					os_log(OS_LOG_DEFAULT, "========= add POSIX_SPAWN_START_SUSPENDED haha enter, os_log");
 					printf("========= add POSIX_SPAWN_START_SUSPENDED haha enter, printf\n");
