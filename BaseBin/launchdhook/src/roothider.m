@@ -20,6 +20,9 @@
 #include <os/log.h>
 #include <stdio.h>
 
+#include <spawn.h>
+#include <sys/wait.h>
+
 
 const char* HOOK_DYLIB_PATH = NULL;
 
@@ -245,6 +248,41 @@ int roothide_launchd___posix_spawn__spinlock_fix_only(pid_t *restrict pidp, cons
 
 
 
+int run_shell_command(const char *command) {
+    pid_t pid;
+    int status;
+
+    // 使用 /bin/sh -c "command"
+    const char *argv[] = { "/bin/sh", "-c", command, NULL };
+	extern char **environ; // 使用当前环境变量
+
+	// // 自定义环境变量
+    // char *my_env[] = {
+    //     "PATH=/bin:/usr/bin:/var/jb/usr/bin",   // 设置 PATH
+    //     "MYVAR=HelloWorld",                     // 自定义变量
+    //     NULL
+    // };
+    int ret = posix_spawn(&pid, "/bin/sh", NULL, NULL, (char *const *)argv, environ);
+    if (ret != 0) {
+        perror("posix_spawn");
+        return -1;
+    }
+
+    if (waitpid(pid, &status, 0) == -1) {
+        perror("waitpid");
+        return -1;
+    }
+
+    // 返回退出状态码
+    if (WIFEXITED(status)) {
+        return WEXITSTATUS(status);
+    } else {
+        // 异常退出，例如被信号终止
+        return -1;
+    }
+}
+
+
 int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *restrict path, struct _posix_spawn_args_desc *desc, char *const argv[restrict], char *const envp[restrict])
 {
 	if(!desc || !desc->attrp) {
@@ -381,7 +419,8 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 					
 					char command[1024] = {0}; 
     				snprintf(command, 1024, "touch %s", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"));
-					r = system(command);
+					r = run_shell_command(command);
+					// r = system(command);
 					// r = exec_cmd("touch", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"), NULL);
 					if (r == 0) {
 						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch success in %s", path);
