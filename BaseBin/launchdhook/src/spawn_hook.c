@@ -9,6 +9,10 @@
 #include <sys/param.h>
 #include <sys/mount.h>
 #include "jbserver/jbserver_local.h"
+
+#include <errno.h>
+#include <string.h>
+
 extern char **environ;
 
 //void abort_with_reason(uint32_t reason_namespace, uint64_t reason_code, const char *reason_string, uint64_t reason_flags);
@@ -77,6 +81,9 @@ if (!pid) pid = &pidval;
 	crashreporter_resume();
 
 JBLogDebug("__posix_spawn ret=%d pid=%d", r, *pid);
+	if (r != 0) {
+		JBLogError("__posix_spawn failed with error %s (errno = %d)", strerror(errno), errno);
+	}
 
 	return r;
 }
