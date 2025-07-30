@@ -386,7 +386,7 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 
 					char strPid[10] = {0}; 
     				snprintf(strPid, 10, "%d", *blacklistedPidp);
-					int r = exec_cmd(JBROOT_PATH("/basebin/opainject"), strPid, JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"), NULL);
+					r = exec_cmd(JBROOT_PATH("/basebin/opainject"), strPid, JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"), NULL);
 					if (r == 0) {
 						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd opainject success in %s", path);
 					} else {
