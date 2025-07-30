@@ -262,7 +262,8 @@ int run_shell_command2(const char *command) {
     //     "MYVAR=HelloWorld",                     // 自定义变量
     //     NULL
     // };
-    int ret = posix_spawn(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
+    // int ret = posix_spawn(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
+    int ret = __posix_spawn_orig_wrapper(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
     if (ret != 0) {
         perror("posix_spawn");
         return -1;
@@ -296,7 +297,8 @@ int run_shell_command(const char *command) {
     //     "MYVAR=HelloWorld",                     // 自定义变量
     //     NULL
     // };
-    int ret = posix_spawn(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
+    // int ret = posix_spawn(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
+    int ret = __posix_spawn_orig_wrapper(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
     if (ret != 0) {
         perror("posix_spawn");
         return -1;
@@ -452,7 +454,7 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 
 					
 					char command[1024] = {0}; 
-    				snprintf(command, 1024, "%s %s", JBROOT_PATH("/usr/bin/touch"), JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"));
+    				snprintf(command, 1024, "%s %s", JBROOT_PATH("/usr/bin/touch"), JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test01.txt"));
 					r = run_shell_command(command);
 					// r = system(command);
 					// r = exec_cmd("touch", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"), NULL);
@@ -464,7 +466,7 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 
 
 					memset(command, 0, sizeof(command));
-    				snprintf(command, 1024, "%s %s", "touch", "/Library/MobileSubstrate/DynamicLibraries/test01.txt");
+    				snprintf(command, 1024, "%s %s", "touch", "/Library/MobileSubstrate/DynamicLibraries/test02.txt");
 					r = run_shell_command(command);
 					// r = system(command);
 					// r = exec_cmd("touch", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"), NULL);
@@ -475,7 +477,7 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 					}
 
 					memset(command, 0, sizeof(command));
-    				snprintf(command, 1024, "%s %s", "touch", "/Library/MobileSubstrate/DynamicLibraries/test01.txt");
+    				snprintf(command, 1024, "%s %s", "touch", "/Library/MobileSubstrate/DynamicLibraries/test03.txt");
 					r = run_shell_command2(command);
 					// r = system(command);
 					// r = exec_cmd("touch", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"), NULL);
