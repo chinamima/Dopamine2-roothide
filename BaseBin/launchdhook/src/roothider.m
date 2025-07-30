@@ -378,7 +378,11 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 					JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd begin in %s", path);
 					int r = 0;
 
-					r = exec_cmd("touch", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"), NULL);
+					
+					char command[1024] = {0}; 
+    				snprintf(command, 1024, "touch %s", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"));
+					r = system(command);
+					// r = exec_cmd("touch", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"), NULL);
 					if (r == 0) {
 						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch success in %s", path);
 					} else {
