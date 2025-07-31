@@ -12,6 +12,7 @@ typedef enum {
 	JBD_MSG_EXEC_TRACE_START = 1004,
 	JBD_MSG_EXEC_TRACE_CANCEL = 1005,
 	JBD_MSG_SPINLOCK_FIX_ONLY = 1006,
+	JBD_MSG_CUSTOMIZED_INJECT = 1007,
 } JBD_MESSAGE_ID;
 
 void enableJBDLog(void* debugLog, void* errorLog);
@@ -32,5 +33,6 @@ int jbdSpawnExecCancel(const char* execfile);
 int jbdExecTraceStart(const char* execfile, bool* traced);
 int jbdExecTraceCancel(const char* execfile);
 int jbdSpinlockFixOnly(int pid, bool resume);
+int jbdCustomizedInject(int pid, const char* execfile, bool resume);
 
 #endif // JAILBREAKD_H

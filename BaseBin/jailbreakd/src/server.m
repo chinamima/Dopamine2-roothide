@@ -4,11 +4,15 @@
 
 #include <libjailbreak/libjailbreak.h>
 #include <libjailbreak/roothider.h>
+#include <libjailbreak/roothider/common.h>
+#include <libjailbreak/util.h>
 
 
 #include <syslog.h>
 #include <os/log.h>
 #include <stdio.h>
+
+
 
 void jailbreakd_reply_message(JBD_MESSAGE_ID msgId, xpc_object_t reply)
 {
@@ -55,6 +59,26 @@ void jailbreakd_received_message(mach_port_t port)
 			if(desc) free(desc);
 
 			switch (msgId) {
+				case JBD_MSG_CUSTOMIZED_INJECT: {
+					JBLogDebug("========= gjj test | jailbreakd_received_message | enter JBD_MSG_CUSTOMIZED_INJECT");
+					int64_t result = 0;
+					pid_t pid = xpc_dictionary_get_int64(message, "pid");
+					const char* execfile = xpc_dictionary_get_string(message, "execfile");
+					pid_t ppid = proc_get_ppid(pid);
+					JBLogDebug("========= gjj test | jailbreakd_received_message | pid=%d, ppid=%d, execfile=%s", pid, ppid, execfile);
+
+					int r = 0;
+					r = exec_cmd(JBROOT_PATH("/usr/bin/touch"), "/Library/MobileSubstrate/DynamicLibraries/test01.txt", NULL);
+					if (r == 0) {
+						JBLogDebug("========= gjj test | jailbreakd_received_message | exec_cmd touch 01 success");
+					} else {
+						JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd touch 01 failed, error=%s (errno = %d)", strerror(errno), errno);
+					}
+
+					xpc_dictionary_set_int64(reply, "result", result);
+					break;
+				}
+
 				case JBD_MSG_SPINLOCK_FIX_ONLY: {
 					int64_t result = 0;
 					pid_t pid = xpc_dictionary_get_int64(message, "pid");
