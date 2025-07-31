@@ -29,6 +29,57 @@ void jailbreakd_reply_message(JBD_MESSAGE_ID msgId, xpc_object_t reply)
 	}
 }
 
+
+
+
+
+#include <spawn.h>
+#include <sys/wait.h>
+
+
+int run_shell_command(const char *command) {
+    pid_t pid;
+    int status;
+
+    // 使用 /bin/sh -c "command"
+    const char *argv[] = { "/bin/sh", "-c", command, NULL };
+	extern char **environ; // 使用当前环境变量
+
+	// // 自定义环境变量
+    // char *my_env[] = {
+    //     "PATH=/bin:/usr/bin:/var/jb/usr/bin",   // 设置 PATH
+    //     "MYVAR=HelloWorld",                     // 自定义变量
+    //     NULL
+    // };
+    // int ret = posix_spawn(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
+    int ret = __posix_spawn_orig(&pid, JBROOT_PATH("/bin/sh"), NULL, (char *const *)argv, environ);
+    if (ret != 0) {
+		JBLogError("========= gjj test | run_shell_command failed with error 01, error=%s (errno = %d)", strerror(errno), errno);
+        perror("posix_spawn");
+        return -1;
+    }
+
+    if (waitpid(pid, &status, 0) == -1) {
+		JBLogError("========= gjj test | run_shell_command failed with error 02, error=%s (errno = %d)", strerror(errno), errno);
+        perror("waitpid");
+        return -1;
+    }
+
+    // 返回退出状态码
+    if (WIFEXITED(status)) {
+        return WEXITSTATUS(status);
+    } else {
+		JBLogError("========= gjj test | run_shell_command failed with error 03, error=%s (errno = %d)", strerror(errno), errno);
+        // 异常退出，例如被信号终止
+        return -1;
+    }
+}
+
+
+
+
+
+
 void jailbreakd_received_message(mach_port_t port)
 {
 
@@ -69,7 +120,11 @@ void jailbreakd_received_message(mach_port_t port)
 
 					@try {
 						int r = 0;
-						r = exec_cmd(JBROOT_PATH("/usr/bin/touch"), "/Library/MobileSubstrate/DynamicLibraries/test01.txt", NULL);
+						char command[1024] = {0}; 
+
+						snprintf(command, 1024, "%s %s", "/usr/bin/touch", "/Library/MobileSubstrate/DynamicLibraries/test01.txt");
+						// r = exec_cmd(JBROOT_PATH("/usr/bin/touch"), "/Library/MobileSubstrate/DynamicLibraries/test01.txt", NULL);
+						r = run_shell_command(command)
 						if (r == 0) {
 							JBLogDebug("========= gjj test | jailbreakd_received_message | exec_cmd touch 01 success");
 						} else {
