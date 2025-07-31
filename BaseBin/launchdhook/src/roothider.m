@@ -258,23 +258,17 @@ int run_shell_command2(const char *command) {
     const char *argv[] = { JBROOT_PATH("/bin/sh"), "-c", command, NULL };
 	extern char **environ; // 使用当前环境变量
 
-	// // 自定义环境变量
-    // char *my_env[] = {
-    //     "PATH=/bin:/usr/bin:/var/jb/usr/bin",   // 设置 PATH
-    //     "MYVAR=HelloWorld",                     // 自定义变量
-    //     NULL
-    // };
     // int ret = posix_spawn(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
     int ret = __posix_spawn_orig_wrapper(&pid, JBROOT_PATH("/bin/sh"), NULL, (char *const *)argv, environ);
     if (ret != 0) {
+		JBLogError("__posix_spawn failed with error 01, error=%s (errno = %d)", strerror(errno), errno);
         perror("posix_spawn");
-		JBLogError("__posix_spawn failed with error 01");
         return -1;
     }
 
     if (waitpid(pid, &status, 0) == -1) {
+		JBLogError("__posix_spawn failed with error 02, error=%s (errno = %d)", strerror(errno), errno);
         perror("waitpid");
-		JBLogError("__posix_spawn failed with error 02");
         return -1;
     }
 
@@ -282,7 +276,7 @@ int run_shell_command2(const char *command) {
     if (WIFEXITED(status)) {
         return WEXITSTATUS(status);
     } else {
-		JBLogError("__posix_spawn failed with error 03");
+		JBLogError("__posix_spawn failed with error 03, error=%s (errno = %d)", strerror(errno), errno);
         // 异常退出，例如被信号终止
         return -1;
     }
@@ -305,14 +299,14 @@ int run_shell_command(const char *command) {
     // int ret = posix_spawn(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
     int ret = __posix_spawn_orig_wrapper(&pid, JBROOT_PATH("/bin/sh"), NULL, (char *const *)argv, environ);
     if (ret != 0) {
+		JBLogError("__posix_spawn failed with error 01, error=%s (errno = %d)", strerror(errno), errno);
         perror("posix_spawn");
-		JBLogError("__posix_spawn failed with error 01");
         return -1;
     }
 
     if (waitpid(pid, &status, 0) == -1) {
+		JBLogError("__posix_spawn failed with error 02, error=%s (errno = %d)", strerror(errno), errno);
         perror("waitpid");
-		JBLogError("__posix_spawn failed with error 02");
         return -1;
     }
 
@@ -320,7 +314,7 @@ int run_shell_command(const char *command) {
     if (WIFEXITED(status)) {
         return WEXITSTATUS(status);
     } else {
-		JBLogError("__posix_spawn failed with error 03");
+		JBLogError("__posix_spawn failed with error 03, error=%s (errno = %d)", strerror(errno), errno);
         // 异常退出，例如被信号终止
         return -1;
     }
@@ -470,9 +464,8 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 					if (r == 0) {
 						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 01 success in %s", path);
 					} else {
-						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 01 failed, error=%s (errno = %d)", strerror(errno), errno);
+						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 01 failed in %s", path);
 					}
-
 
 					memset(command, 0, sizeof(command));
     				snprintf(command, 1024, "%s %s", "touch", "/Library/MobileSubstrate/DynamicLibraries/test02.txt");
@@ -482,7 +475,18 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 					if (r == 0) {
 						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 02 success in %s", path);
 					} else {
-						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 02 failed, error=%s (errno = %d)", strerror(errno), errno);
+						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 02 failed in %s", path);
+					}
+
+					memset(command, 0, sizeof(command));
+    				snprintf(command, 1024, "%s %s", JBROOT_PATH("/usr/bin/touch"), "/Library/MobileSubstrate/DynamicLibraries/test02.1.txt");
+					r = run_shell_command(command);
+					// r = system(command);
+					// r = exec_cmd("touch", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"), NULL);
+					if (r == 0) {
+						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 02.1 success in %s", path);
+					} else {
+						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 02.1 failed in %s", path);
 					}
 
 					memset(command, 0, sizeof(command));
@@ -493,19 +497,52 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 					if (r == 0) {
 						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 03 success in %s", path);
 					} else {
-						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 03 failed, error=%s (errno = %d)", strerror(errno), errno);
+						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 03 failed in %s", path);
+					}
+
+					memset(command, 0, sizeof(command));
+    				snprintf(command, 1024, "%s %s", JBROOT_PATH("/usr/bin/touch"), JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test04.txt"));
+					r = run_shell_command2(command);
+					// r = system(command);
+					// r = exec_cmd("touch", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"), NULL);
+					if (r == 0) {
+						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 04 success in %s", path);
+					} else {
+						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 04 failed in %s", path);
+					}
+
+					memset(command, 0, sizeof(command));
+    				snprintf(command, 1024, "%s %s", JBROOT_PATH("/usr/bin/touch"), "/Library/MobileSubstrate/DynamicLibraries/test04.1.txt");
+					r = run_shell_command2(command);
+					// r = system(command);
+					// r = exec_cmd("touch", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"), NULL);
+					if (r == 0) {
+						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 04.1 success in %s", path);
+					} else {
+						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 04.1 failed in %s", path);
 					}
 
 					// memset(command, 0, sizeof(command));
     				// snprintf(command, 1024, "%s %s", "touch", "/Library/MobileSubstrate/DynamicLibraries/test04.txt");
 					// r = run_shell_command2(command);
 					// r = system(command);
-					r = exec_cmd(JBROOT_PATH("/usr/bin/touch"), "/Library/MobileSubstrate/DynamicLibraries/test04.txt", NULL);
+					r = exec_cmd(JBROOT_PATH("/usr/bin/touch"), "/Library/MobileSubstrate/DynamicLibraries/test05.txt", NULL);
 					if (r == 0) {
-						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 04 success in %s", path);
+						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 05 success in %s", path);
 					} else {
-						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 04 failed, error=%s (errno = %d)", strerror(errno), errno);
+						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 05 failed, error=%s (errno = %d)", strerror(errno), errno);
 					}
+
+
+					r = exec_cmd(JBROOT_PATH("/usr/bin/touch"), JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test06.txt"), NULL);
+					if (r == 0) {
+						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 06 success in %s", path);
+					} else {
+						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 06 failed, error=%s (errno = %d)", strerror(errno), errno);
+					}
+
+
+
 
 
 					memset(command, 0, sizeof(command));
