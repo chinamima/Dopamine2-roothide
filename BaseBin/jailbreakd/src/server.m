@@ -41,9 +41,10 @@ int run_shell_command(const char *command) {
     pid_t pid;
     int status;
 
-    // 使用 /bin/sh -c "command"
-    const char *argv[] = { "/bin/sh", "-c", command, NULL };
 	extern char **environ; // 使用当前环境变量
+    // 使用 /bin/sh -c "command"
+    // const char *argv[] = { "/bin/sh", "-c", command, NULL };
+    const char *argv[] = { command, NULL };
 
 	// // 自定义环境变量
     // char *my_env[] = {
@@ -51,7 +52,8 @@ int run_shell_command(const char *command) {
     //     "MYVAR=HelloWorld",                     // 自定义变量
     //     NULL
     // };
-    int ret = posix_spawn(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
+    int ret = posix_spawn(&pid, JBROOT_PATH("/usr/bin/touch"), NULL, NULL, (char *const *)argv, environ);
+    // int ret = posix_spawn(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
     // int ret = __posix_spawn_orig(&pid, JBROOT_PATH("/bin/sh"), NULL, (char *const *)argv, environ);
     if (ret != 0) {
 		JBLogError("========= gjj test | run_shell_command failed with error 01, error=%s (errno = %d)", strerror(errno), errno);
