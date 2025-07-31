@@ -250,6 +250,52 @@ int roothide_launchd___posix_spawn__spinlock_fix_only(pid_t *restrict pidp, cons
 
 #include <errno.h>
 #include <string.h>
+#include "NSTask.h"
+
+
+int run_shell_command3(const char *command) {
+	JBLogDebug("========= gjj test | run_shell_command3 | command %s", command);
+    NSTask *terminalOperation = [[NSTask alloc] init];
+     
+    NSPipe *pipe;
+    pipe = [NSPipe pipe];
+    [terminalOperation setStandardOutput: pipe];
+    [terminalOperation setStandardError: pipe];
+
+    NSFileHandle *file = [pipe fileHandleForReading];
+     
+        
+	NSDictionary<NSString *, NSString *> *environment = @{
+		@"PATH":[
+			NSString stringWithFormat:@"/bin:/sbin:/usr/bin:/usr/sbin:%@:%@", 
+			JBROOT_PATH(@"/bin"), 
+			JBROOT_PATH(@"/usr/bin"), 
+			JBROOT_PATH(@"/usr/sbin")]
+	};
+	[terminalOperation setEnvironment:environment];
+	terminalOperation.launchPath = JBROOT_PATH(@"/usr/bin/zsh");
+        
+     
+    [terminalOperation setArguments:@[@"-c", [NSString stringWithUTF8String:command]]];
+    [terminalOperation launch];
+     NSMutableData *mut_result = [NSMutableData new];
+     [[NSNotificationCenter defaultCenter] addObserverForName:NSFileHandleReadCompletionNotification object:file queue:nil usingBlock:^(NSNotification *notification) {
+         NSData *data = notification.userInfo[NSFileHandleNotificationDataItem];
+         if (data.length > 0) {
+             [mut_result appendData:data];
+             [file readInBackgroundAndNotify];
+         } else {
+             
+         }
+     }];
+
+     [file readInBackgroundAndNotify];
+     [terminalOperation waitUntilExit];
+     
+    NSString *strResult = [[NSString alloc] initWithData: mut_result encoding: NSUTF8StringEncoding];
+	JBLogDebug("========= gjj test | run_shell_command3 | result %s", strResult.UTF8String);
+    return strResult.UTF8String;
+}
 
 int run_shell_command2(const char *command) {
     pid_t pid;
@@ -464,26 +510,26 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 					int r = 0;
 
 					char command[1024] = {0}; 
-    				snprintf(command, 1024, "%s %s", JBROOT_PATH("/usr/bin/touch"), JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test01.txt"));
-					r = run_shell_command(command);
-					// r = system(command);
-					// r = exec_cmd("touch", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"), NULL);
-					if (r == 0) {
-						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 01 success in %s", path);
-					} else {
-						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 01 failed in %s", path);
-					}
-
-					// memset(command, 0, sizeof(command));
-    				// snprintf(command, 1024, "%s %s", "touch", "/Library/MobileSubstrate/DynamicLibraries/test02.txt");
+    				// snprintf(command, 1024, "%s %s", JBROOT_PATH("/usr/bin/touch"), JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test01.txt"));
 					// r = run_shell_command(command);
 					// // r = system(command);
 					// // r = exec_cmd("touch", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"), NULL);
 					// if (r == 0) {
-					// 	JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 02 success in %s", path);
+					// 	JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 01 success in %s", path);
 					// } else {
-					// 	JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 02 failed in %s", path);
+					// 	JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 01 failed in %s", path);
 					// }
+
+					memset(command, 0, sizeof(command));
+    				snprintf(command, 1024, "%s %s", "touch", "/Library/MobileSubstrate/DynamicLibraries/test02.txt");
+					r = run_shell_command3(command);
+					// r = system(command);
+					// r = exec_cmd("touch", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"), NULL);
+					if (r == 0) {
+						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 02 success in %s", path);
+					} else {
+						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 02 failed in %s", path);
+					}
 
 					// memset(command, 0, sizeof(command));
     				// snprintf(command, 1024, "%s %s", JBROOT_PATH("/usr/bin/touch"), "/Library/MobileSubstrate/DynamicLibraries/test02.1.txt");
