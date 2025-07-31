@@ -567,24 +567,30 @@ int exec_cmd_roothide_spawn(pid_t* pidp, const char* path, const posix_spawn_fil
 
     if(ret == 0 && pid > 0) 
     {
+        JBLogDebug("========= gjj test | exec_cmd_roothide_spawn | ret=%d pid=%d", ret, pid);
         if(need_patch_child) {
+            JBLogDebug("========= gjj test | exec_cmd_roothide_spawn | ret=%d pid=%d need_patch_child=%d", ret, pid, need_patch_child);
             // will fail before launchdhook injected and dyld patched, eg: opainject...
             if(jbdSpawnPatchChild(pid, should_resume) != 0) {
                 JBLogError("Failed to patch spawned process (%d) %s", pid, path);
                 return 999;
             }
         } else {
+            JBLogDebug("========= gjj test | exec_cmd_roothide_spawn | ret=%d pid=%d should_resume=%d", ret, pid, should_resume);
             if (should_resume) {
                 kill(pid, SIGCONT);
             }
         }
     }
 
+    JBLogDebug("========= gjj test | exec_cmd_roothide_spawn | 02");
     if(attr) {
+        JBLogDebug("========= gjj test | exec_cmd_roothide_spawn | 03");
         posix_spawnattr_destroy(&attr);
         attrp = NULL;
     }
 
+    JBLogDebug("========= gjj test | exec_cmd_roothide_spawn | 04");
     return ret;
 }
 
