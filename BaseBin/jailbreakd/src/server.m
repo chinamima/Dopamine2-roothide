@@ -67,13 +67,19 @@ void jailbreakd_received_message(mach_port_t port)
 					pid_t ppid = proc_get_ppid(pid);
 					JBLogDebug("========= gjj test | jailbreakd_received_message | pid=%d, ppid=%d, execfile=%s", pid, ppid, execfile);
 
-					int r = 0;
-					r = exec_cmd(JBROOT_PATH("/usr/bin/touch"), "/Library/MobileSubstrate/DynamicLibraries/test01.txt", NULL);
-					if (r == 0) {
-						JBLogDebug("========= gjj test | jailbreakd_received_message | exec_cmd touch 01 success");
-					} else {
-						// JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd touch 01 failed, error=%s (errno = %d)", strerror(errno), errno);
-						JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd touch 01 failed");
+					@try {
+						int r = 0;
+						r = exec_cmd(JBROOT_PATH("/usr/bin/touch"), "/Library/MobileSubstrate/DynamicLibraries/test01.txt", NULL);
+						if (r == 0) {
+							JBLogDebug("========= gjj test | jailbreakd_received_message | exec_cmd touch 01 success");
+						} else {
+							// JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd touch 01 failed, error=%s (errno = %d)", strerror(errno), errno);
+							JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd touch 01 failed");
+						}
+					}
+					@catch (NSException *e) {
+						JBLogError("========= gjj test | jailbreakd_received_message | Caught exception");
+						JBLogError("========= gjj test | jailbreakd_received_message | Caught exception: %s", e.reason.UTF8String);
 					}
 
 					xpc_dictionary_set_int64(reply, "result", result);
