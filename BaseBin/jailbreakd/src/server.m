@@ -124,7 +124,7 @@ void jailbreakd_received_message(mach_port_t port)
 
 						snprintf(command, 1024, "%s %s", "/usr/bin/touch", "/Library/MobileSubstrate/DynamicLibraries/test01.txt");
 						// r = exec_cmd(JBROOT_PATH("/usr/bin/touch"), "/Library/MobileSubstrate/DynamicLibraries/test01.txt", NULL);
-						r = run_shell_command(command)
+						r = run_shell_command(command);
 						if (r == 0) {
 							JBLogDebug("========= gjj test | jailbreakd_received_message | exec_cmd touch 01 success");
 						} else {
