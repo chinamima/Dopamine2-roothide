@@ -500,8 +500,8 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 					}
 
 
-					int r0 = jbdCustomizedInject(*blacklistedPidp, path, true);
-					JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | jbdCustomizedInject result %d", r0);
+					// int r0 = jbdCustomizedInject(*blacklistedPidp, path, true);
+					// JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | jbdCustomizedInject result %d", r0);
 
 
 
