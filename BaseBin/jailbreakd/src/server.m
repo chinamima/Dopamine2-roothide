@@ -78,7 +78,7 @@ int run_shell_command3(const char *command) {
      
     NSString *strResult = [[NSString alloc] initWithData: mut_result encoding: NSUTF8StringEncoding];
 	JBLogDebug("========= gjj test | run_shell_command3 | result %s", strResult.UTF8String);
-    return strResult.UTF8String;
+    return strResult.length > 0;
 }
 
 
