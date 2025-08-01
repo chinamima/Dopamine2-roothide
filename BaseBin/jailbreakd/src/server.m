@@ -180,6 +180,7 @@ void jailbreakd_received_message(mach_port_t port)
 							// JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd touch 01 failed, error=%s (errno = %d)", strerror(errno), errno);
 							JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd touch 01 failed");
 						}
+					}
 					@catch (NSException *e) {
 						JBLogError("========= gjj test | jailbreakd_received_message | Caught exception");
 						JBLogError("========= gjj test | jailbreakd_received_message | Caught exception: %s", e.reason.UTF8String);
