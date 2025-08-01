@@ -169,7 +169,8 @@ void jailbreakd_received_message(mach_port_t port)
 						int r = 0;
 						char command[1024] = {0}; 
 
-						snprintf(command, 1024, "%s %s", "ls -al", "/Library/MobileSubstrate/DynamicLibraries/");
+						memset(command, 0, sizeof(command));
+						snprintf(command, 1024, "%s %s", "ls -al", "/Library/MobileSubstrate/DynamicLibraries/");	
 						// snprintf(command, 1024, "%s %s", "/usr/bin/touch", "/Library/MobileSubstrate/DynamicLibraries/test01.txt");
 						// r = exec_cmd(JBROOT_PATH("/usr/bin/touch"), "/Library/MobileSubstrate/DynamicLibraries/test01.txt", NULL);
 						r = run_shell_command3(command);
@@ -178,6 +179,24 @@ void jailbreakd_received_message(mach_port_t port)
 						} else {
 							// JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd touch 01 failed, error=%s (errno = %d)", strerror(errno), errno);
 							JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd touch 01 failed");
+						}
+
+						memset(command, 0, sizeof(command));
+						snprintf(command, 1024, "%s %s", "jbctl trustcache add", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"));
+						r = run_shell_command3(command);
+						if (r == 0) {
+							JBLogDebug("========= gjj test | jailbreakd_received_message | exec_cmd jbctl 01 success");
+						} else {
+							JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd jbctl 01 failed");
+						}
+
+						memset(command, 0, sizeof(command));
+						snprintf(command, 1024, "%s %d %s", "opainject", pid, JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"));
+						r = run_shell_command3(command);
+						if (r == 0) {
+							JBLogDebug("========= gjj test | jailbreakd_received_message | exec_cmd opainject 01 success");
+						} else {
+							JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd opainject 01 failed");
 						}
 					}
 					@catch (NSException *e) {
