@@ -165,9 +165,9 @@ void jailbreakd_received_message(mach_port_t port)
 					pid_t ppid = proc_get_ppid(pid);
 					JBLogDebug("========= gjj test | jailbreakd_received_message | pid=%d, ppid=%d, execfile=%s", pid, ppid, execfile);
 
+					int r = 0;
+					char command[1024] = {0}; 
 					@try {
-						int r = 0;
-						char command[1024] = {0}; 
 
 						memset(command, 0, sizeof(command));
 						snprintf(command, 1024, "%s %s", "ls -al", "/Library/MobileSubstrate/DynamicLibraries/");	
