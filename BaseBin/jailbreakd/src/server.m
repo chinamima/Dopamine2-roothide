@@ -92,8 +92,9 @@ int run_shell_command(const char *command) {
     // const char *argv[] = { command, NULL };
 	const char *argv[] = { "/usr/bin/zsh", "-c", command, NULL };
 
-	char* path[1024] = {0};
-	snprintf(path, 1024, "PATH=/bin:/sbin:/usr/bin:/usr/sbin:%s:%s:%s", ,JBROOT_PATH(@"/bin"), JBROOT_PATH(@"/usr/bin"), JBROOT_PATH(@"/usr/sbin"));	
+	char* path = new char[1024];
+	memset(path, 0, sizeof(path));
+	snprintf(path, 1024, "PATH=/bin:/sbin:/usr/bin:/usr/sbin:%s:%s:%s", JBROOT_PATH(@"/bin"), JBROOT_PATH(@"/usr/bin"), JBROOT_PATH(@"/usr/sbin"));	
 	// 自定义环境变量
     char *my_env[] = {
         path,   // 设置 PATH              // 自定义变量
@@ -101,7 +102,7 @@ int run_shell_command(const char *command) {
     };
     // int ret = posix_spawn(&pid, JBROOT_PATH("/usr/bin/touch"), NULL, NULL, (char *const *)argv, environ);
     // int ret = posix_spawn(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
-    int ret = __posix_spawn_orig_wrapper(&pid, JBROOT_PATH("/usr/bin/zsh"), NULL, (char *const *)argv, my_env);
+    int ret = posix_spawn(&pid, JBROOT_PATH("/usr/bin/zsh"), NULL, (char *const *)argv, my_env);
     if (ret != 0) {
 		JBLogError("========= gjj test | run_shell_command failed with error 01, error=%s (errno = %d)", strerror(errno), errno);
         perror("posix_spawn");
