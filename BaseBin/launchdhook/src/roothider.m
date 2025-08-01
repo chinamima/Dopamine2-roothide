@@ -266,8 +266,7 @@ int run_shell_command3(const char *command) {
      
         
 	NSDictionary<NSString *, NSString *> *environment = @{
-		@"PATH":[
-			NSString stringWithFormat:@"/bin:/sbin:/usr/bin:/usr/sbin:%@:%@", 
+		@"PATH":[NSString stringWithFormat:@"/bin:/sbin:/usr/bin:/usr/sbin:%@:%@:%@", 
 			JBROOT_PATH(@"/bin"), 
 			JBROOT_PATH(@"/usr/bin"), 
 			JBROOT_PATH(@"/usr/sbin")]
@@ -521,7 +520,8 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 					// }
 
 					memset(command, 0, sizeof(command));
-    				snprintf(command, 1024, "%s %s", "touch", "/Library/MobileSubstrate/DynamicLibraries/test02.txt");
+    				// snprintf(command, 1024, "%s %s", "touch", "/Library/MobileSubstrate/DynamicLibraries/test02.txt");
+    				snprintf(command, 1024, "%s %s", "ls -al", "/Library/MobileSubstrate/DynamicLibraries/");
 					r = run_shell_command3(command);
 					// r = system(command);
 					// r = exec_cmd("touch", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"), NULL);
