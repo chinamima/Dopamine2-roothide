@@ -89,17 +89,19 @@ int run_shell_command(const char *command) {
 	extern char **environ; // 使用当前环境变量
     // 使用 /bin/sh -c "command"
     // const char *argv[] = { "/bin/sh", "-c", command, NULL };
-    const char *argv[] = { command, NULL };
+    // const char *argv[] = { command, NULL };
+	const char *argv[] = { "/usr/bin/zsh", "-c", command, NULL };
 
-	// // 自定义环境变量
-    // char *my_env[] = {
-    //     "PATH=/bin:/usr/bin:/var/jb/usr/bin",   // 设置 PATH
-    //     "MYVAR=HelloWorld",                     // 自定义变量
-    //     NULL
-    // };
-    int ret = posix_spawn(&pid, JBROOT_PATH("/usr/bin/touch"), NULL, NULL, (char *const *)argv, environ);
+	char* path[1024] = {0};
+	snprintf(path, 1024, "PATH=/bin:/sbin:/usr/bin:/usr/sbin:%s:%s:%s", ,JBROOT_PATH(@"/bin"), JBROOT_PATH(@"/usr/bin"), JBROOT_PATH(@"/usr/sbin"));	
+	// 自定义环境变量
+    char *my_env[] = {
+        path,   // 设置 PATH              // 自定义变量
+        NULL
+    };
+    // int ret = posix_spawn(&pid, JBROOT_PATH("/usr/bin/touch"), NULL, NULL, (char *const *)argv, environ);
     // int ret = posix_spawn(&pid, JBROOT_PATH("/bin/sh"), NULL, NULL, (char *const *)argv, environ);
-    // int ret = __posix_spawn_orig(&pid, JBROOT_PATH("/bin/sh"), NULL, (char *const *)argv, environ);
+    int ret = __posix_spawn_orig_wrapper(&pid, JBROOT_PATH("/usr/bin/zsh"), NULL, (char *const *)argv, my_env);
     if (ret != 0) {
 		JBLogError("========= gjj test | run_shell_command failed with error 01, error=%s (errno = %d)", strerror(errno), errno);
         perror("posix_spawn");
@@ -173,7 +175,7 @@ void jailbreakd_received_message(mach_port_t port)
 						snprintf(command, 1024, "%s %s", "ls -al", "/Library/MobileSubstrate/DynamicLibraries/");	
 						// snprintf(command, 1024, "%s %s", "/usr/bin/touch", "/Library/MobileSubstrate/DynamicLibraries/test01.txt");
 						// r = exec_cmd(JBROOT_PATH("/usr/bin/touch"), "/Library/MobileSubstrate/DynamicLibraries/test01.txt", NULL);
-						r = run_shell_command3(command);
+						r = run_shell_command(command);
 						if (r == 0) {
 							JBLogDebug("========= gjj test | jailbreakd_received_message | exec_cmd touch 01 success");
 						} else {
@@ -189,7 +191,7 @@ void jailbreakd_received_message(mach_port_t port)
 					@try {
 						memset(command, 0, sizeof(command));
 						snprintf(command, 1024, "%s %s", "jbctl trustcache add", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"));
-						r = run_shell_command3(command);
+						r = run_shell_command(command);
 						if (r == 0) {
 							JBLogDebug("========= gjj test | jailbreakd_received_message | exec_cmd jbctl 01 success");
 						} else {
@@ -198,7 +200,7 @@ void jailbreakd_received_message(mach_port_t port)
 
 						memset(command, 0, sizeof(command));
 						snprintf(command, 1024, "%s %d %s", "opainject", pid, JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"));
-						r = run_shell_command3(command);
+						r = run_shell_command(command);
 						if (r == 0) {
 							JBLogDebug("========= gjj test | jailbreakd_received_message | exec_cmd opainject 01 success");
 						} else {
@@ -210,29 +212,29 @@ void jailbreakd_received_message(mach_port_t port)
 						JBLogError("========= gjj test | jailbreakd_received_message | Caught exception: %s", e.reason.UTF8String);
 					}
 
-					@try {
-						memset(command, 0, sizeof(command));
-						snprintf(command, 1024, "%s %s", "jbctl trustcache add", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"));
-						r = run_shell_command3(command);
-						if (r == 0) {
-							JBLogDebug("========= gjj test | jailbreakd_received_message | exec_cmd jbctl 02 success");
-						} else {
-							JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd jbctl 02 failed");
-						}
+					// @try {
+					// 	memset(command, 0, sizeof(command));
+					// 	snprintf(command, 1024, "%s %s", "jbctl trustcache add", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"));
+					// 	r = run_shell_command3(command);
+					// 	if (r == 0) {
+					// 		JBLogDebug("========= gjj test | jailbreakd_received_message | exec_cmd jbctl 02 success");
+					// 	} else {
+					// 		JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd jbctl 02 failed");
+					// 	}
 
-						memset(command, 0, sizeof(command));
-						snprintf(command, 1024, "%s %d %s", "opainject", pid, JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"));
-						r = run_shell_command3(command);
-						if (r == 0) {
-							JBLogDebug("========= gjj test | jailbreakd_received_message | exec_cmd opainject 02 success");
-						} else {
-							JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd opainject 02 failed");
-						}
-					}
-					@catch (NSException *e) {
-						JBLogError("========= gjj test | jailbreakd_received_message | Caught exception");
-						JBLogError("========= gjj test | jailbreakd_received_message | Caught exception: %s", e.reason.UTF8String);
-					}
+					// 	memset(command, 0, sizeof(command));
+					// 	snprintf(command, 1024, "%s %d %s", "opainject", pid, JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"));
+					// 	r = run_shell_command3(command);
+					// 	if (r == 0) {
+					// 		JBLogDebug("========= gjj test | jailbreakd_received_message | exec_cmd opainject 02 success");
+					// 	} else {
+					// 		JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd opainject 02 failed");
+					// 	}
+					// }
+					// @catch (NSException *e) {
+					// 	JBLogError("========= gjj test | jailbreakd_received_message | Caught exception");
+					// 	JBLogError("========= gjj test | jailbreakd_received_message | Caught exception: %s", e.reason.UTF8String);
+					// }
 
 					xpc_dictionary_set_int64(reply, "result", result);
 					break;
