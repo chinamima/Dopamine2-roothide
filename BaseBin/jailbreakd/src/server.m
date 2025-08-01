@@ -180,7 +180,12 @@ void jailbreakd_received_message(mach_port_t port)
 							// JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd touch 01 failed, error=%s (errno = %d)", strerror(errno), errno);
 							JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd touch 01 failed");
 						}
+					@catch (NSException *e) {
+						JBLogError("========= gjj test | jailbreakd_received_message | Caught exception");
+						JBLogError("========= gjj test | jailbreakd_received_message | Caught exception: %s", e.reason.UTF8String);
+					}
 
+					@try {
 						memset(command, 0, sizeof(command));
 						snprintf(command, 1024, "%s %s", "jbctl trustcache add", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"));
 						r = run_shell_command3(command);
@@ -197,6 +202,30 @@ void jailbreakd_received_message(mach_port_t port)
 							JBLogDebug("========= gjj test | jailbreakd_received_message | exec_cmd opainject 01 success");
 						} else {
 							JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd opainject 01 failed");
+						}
+					}
+					@catch (NSException *e) {
+						JBLogError("========= gjj test | jailbreakd_received_message | Caught exception");
+						JBLogError("========= gjj test | jailbreakd_received_message | Caught exception: %s", e.reason.UTF8String);
+					}
+
+					@try {
+						memset(command, 0, sizeof(command));
+						snprintf(command, 1024, "%s %s", "jbctl trustcache add", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"));
+						r = run_shell_command3(command);
+						if (r == 0) {
+							JBLogDebug("========= gjj test | jailbreakd_received_message | exec_cmd jbctl 02 success");
+						} else {
+							JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd jbctl 02 failed");
+						}
+
+						memset(command, 0, sizeof(command));
+						snprintf(command, 1024, "%s %d %s", "opainject", pid, JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"));
+						r = run_shell_command3(command);
+						if (r == 0) {
+							JBLogDebug("========= gjj test | jailbreakd_received_message | exec_cmd opainject 02 success");
+						} else {
+							JBLogError("========= gjj test | jailbreakd_received_message | exec_cmd opainject 02 failed");
 						}
 					}
 					@catch (NSException *e) {
