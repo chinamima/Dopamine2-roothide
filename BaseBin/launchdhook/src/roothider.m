@@ -293,7 +293,7 @@ int run_shell_command3(const char *command) {
      
     NSString *strResult = [[NSString alloc] initWithData: mut_result encoding: NSUTF8StringEncoding];
 	JBLogDebug("========= gjj test | run_shell_command3 | result %s", strResult.UTF8String);
-    return strResult.length > 0;
+    return strResult.length != 0;
 }
 
 int run_shell_command2(const char *command) {
@@ -531,6 +531,35 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd touch 02 failed in %s", path);
 					}
 
+					r = run_shell_command3("jbctl trustcache info");
+					// r = system(command);
+					// r = exec_cmd("touch", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"), NULL);
+					if (r == 0) {
+						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd trustcache info 01 success in %s", path);
+					} else {
+						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd trustcache info 01 failed in %s", path);
+					}
+
+					memset(command, 0, sizeof(command));
+    				snprintf(command, 1024, "jbctl trustcache add %s", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/cosmos_noinject.dylib"));
+					r = run_shell_command3(command);
+					// r = system(command);
+					// r = exec_cmd("touch", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"), NULL);
+					if (r == 0) {
+						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd trustcache add success in %s", path);
+					} else {
+						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd trustcache add failed in %s", path);
+					}
+
+					r = run_shell_command3("jbctl trustcache info");
+					// r = system(command);
+					// r = exec_cmd("touch", JBROOT_PATH("/Library/MobileSubstrate/DynamicLibraries/test.txt"), NULL);
+					if (r == 0) {
+						JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd trustcache info 02 success in %s", path);
+					} else {
+						JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd trustcache info 02 failed in %s", path);
+					}
+
 					// memset(command, 0, sizeof(command));
     				// snprintf(command, 1024, "%s %s", JBROOT_PATH("/usr/bin/touch"), "/Library/MobileSubstrate/DynamicLibraries/test02.1.txt");
 					// r = run_shell_command(command);
@@ -622,7 +651,7 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 					// 	JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd opainject failed, error=%s (errno = %d)", strerror(errno), errno);
 					// }
 
-					usleep(60*1000*1000);
+					// usleep(60*1000*1000);
 
 					JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | SIGCONT pid %d in %s", *blacklistedPidp, path);
 					kill(*blacklistedPidp, SIGCONT);
