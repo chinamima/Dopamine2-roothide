@@ -8,6 +8,8 @@
 #include <libjailbreak/util.h>
 
 
+#include <stdlib.h>
+#include <string.h>
 #include <syslog.h>
 #include <os/log.h>
 #include <stdio.h>
@@ -92,9 +94,8 @@ int run_shell_command(const char *command) {
     // const char *argv[] = { command, NULL };
 	const char *argv[] = { "/usr/bin/zsh", "-c", command, NULL };
 
-	char* path = new char[1024];
-	memset(path, 0, sizeof(path));
-	snprintf(path, 1024, "PATH=/bin:/sbin:/usr/bin:/usr/sbin:%s:%s:%s", JBROOT_PATH(@"/bin"), JBROOT_PATH(@"/usr/bin"), JBROOT_PATH(@"/usr/sbin"));	
+	char* path = NULL;
+	asprintf(path, 1024, "PATH=/bin:/sbin:/usr/bin:/usr/sbin:%s:%s:%s", JBROOT_PATH(@"/bin"), JBROOT_PATH(@"/usr/bin"), JBROOT_PATH(@"/usr/sbin"));	
 	// 自定义环境变量
     char *my_env[] = {
         path,   // 设置 PATH              // 自定义变量
