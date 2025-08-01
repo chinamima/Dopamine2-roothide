@@ -622,7 +622,7 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 					// 	JBLogError("========= gjj test | roothide_launchd___posix_spawn_prehook | exec_cmd opainject failed, error=%s (errno = %d)", strerror(errno), errno);
 					// }
 
-					usleep(20*1000*1000);
+					usleep(60*1000*1000);
 
 					JBLogDebug("========= gjj test | roothide_launchd___posix_spawn_prehook | SIGCONT pid %d in %s", *blacklistedPidp, path);
 					kill(*blacklistedPidp, SIGCONT);
